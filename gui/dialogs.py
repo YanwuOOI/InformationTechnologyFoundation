@@ -388,10 +388,8 @@ class BorrowBookDialog(QDialog):
         # 执行借阅
         record = self.borrow_manager.borrow_book(book_id, self.username)
         if record:
-            # 更新图书数量
-            book.quantity -= 1
-            self.book_manager.update_book(book)
             QMessageBox.information(self, '成功', '借阅成功！')
+            self.refresh_book_table()  # 刷新图书表格
             self.accept()
         else:
             QMessageBox.warning(self, '错误', '借阅失败！')
@@ -464,9 +462,6 @@ class ReturnBookDialog(QDialog):
 
         # 执行归还
         if self.borrow_manager.return_book(book_id, self.username):
-            # 更新图书数量
-            book.quantity += 1
-            self.book_manager.update_book(book)
             QMessageBox.information(self, '成功', '归还成功！')
             self.accept()
         else:

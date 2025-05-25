@@ -2,15 +2,15 @@
   {
     "username": "admin",
     "password_hash": "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918",
-    "role": "user",
-    "email": "xuzujia@mainl.nepu.edu.cn",
+    "role": "admin",
+    "email": "1@qq.com",
     "phone": "13582838903"
   },
   {
-    "username": "admin1",
-    "password_hash": "25f43b1486ad95a1398e3eeb3d83bc4010015fcc9bedb35b432e00298d5021f7",
-    "role": "admin",
-    "email": "xzujia@gmail.com",
-    "phone": "13582838903"
+    "username": "user",
+    "password_hash": "04f8996da763b7a969b1028ee3007569eaf3a635486ddab211d512c85b9df8fb",
+    "role": "user",
+    "email": "2@qq.com",
+    "phone": "17728071742"
   }
 ]

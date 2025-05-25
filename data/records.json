@@ -2,8 +2,15 @@
   {
     "id": "BR000001",
     "book_id": "BK000001",
-    "username": "admin1",
-    "borrow_date": "2025-05-25 10:40:01",
-    "return_date": "2025-05-25 10:40:19"
+    "username": "user",
+    "borrow_date": "2025-05-25 11:59:06",
+    "return_date": "2025-05-25 11:59:27"
+  },
+  {
+    "id": "BR000002",
+    "book_id": "BK000001",
+    "username": "user",
+    "borrow_date": "2025-05-25 12:02:45",
+    "return_date": "2025-05-25 12:02:55"
   }
 ]

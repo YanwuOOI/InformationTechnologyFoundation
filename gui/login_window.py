@@ -90,10 +90,10 @@ class LoginWindow(QMainWindow):
         password = self.password_input.text()
 
         if not username or not password:
-            QMessageBox.warning(self, '警告', '请输入用户名和密码！')
+            QMessageBox.warning(self, '警告', '用户名和密码不能为空！')
             return
 
-        user = self.user_manager.authenticate(username, password)
+        user = self.user_manager.login(username, password)
         if user:
             self.main_window = MainWindow(user)
             self.main_window.show()

@@ -14,7 +14,7 @@ class MainWindow(QMainWindow):
         self.user = user
         self.user_manager = UserManager()
         self.book_manager = BookManager()
-        self.borrow_manager = BorrowManager()
+        self.borrow_manager = BorrowManager(book_manager=self.book_manager)
         self.init_ui()
 
     def init_ui(self):
@@ -284,12 +284,14 @@ class MainWindow(QMainWindow):
                                 self.user.username, parent=self)
         if dialog.exec_() == QDialog.Accepted:
             self.refresh_borrow_table()
-
+            self.refresh_book_table()
+        
     def return_book(self):
         dialog = ReturnBookDialog(self.book_manager, self.borrow_manager,
                                 self.user.username, parent=self)
         if dialog.exec_() == QDialog.Accepted:
             self.refresh_borrow_table()
+            self.refresh_book_table()
 
     def add_user(self):
         dialog = UserDialog(self.user_manager, parent=self)
