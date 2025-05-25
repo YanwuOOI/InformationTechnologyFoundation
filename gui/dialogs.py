@@ -1,14 +1,65 @@
+"""
+对话框模块
+
+本模块包含系统中使用的所有交互对话框：
+1. 用户管理对话框
+   - 注册新用户
+   - 修改密码
+   - 编辑用户信息
+   
+2. 图书管理对话框
+   - 添加/编辑图书
+   - 借阅图书
+   - 归还图书
+   
+界面特点：
+1. 模态对话框设计
+2. 统一的布局风格
+3. 完善的输入验证
+4. 友好的交互反馈
+"""
+
 from PyQt5.QtWidgets import (QDialog, QVBoxLayout, QHBoxLayout, QLabel,
-                             QLineEdit, QPushButton, QMessageBox, QComboBox,
-                             QTextEdit, QSpinBox, QFileDialog, QTableWidget,
-                             QTableWidgetItem, QHeaderView)
+                            QLineEdit, QPushButton, QMessageBox, QComboBox,
+                            QTextEdit, QSpinBox, QFileDialog, QTableWidget,
+                            QTableWidgetItem, QHeaderView)
 from PyQt5.QtCore import Qt
 from core.user import UserManager, UserRole, User
 from core.book import Book, BookManager
 from core.borrow import BorrowManager, BorrowRecord
 
 class RegisterDialog(QDialog):
+    """
+    用户注册对话框
+    
+    界面布局：
+    1. 基本信息区
+       - 用户名输入
+       - 密码输入（双重确认）
+       - 角色选择
+       
+    2. 联系信息区
+       - 电子邮箱
+       - 手机号码
+       
+    3. 操作按钮区
+       - 注册确认
+       - 取消操作
+       
+    数据验证：
+    - 必填字段检查
+    - 密码一致性验证
+    - 用户名唯一性检查
+    """
+    
     def __init__(self, user_manager: UserManager, parent=None):
+        """
+        初始化注册对话框
+        
+        Args:
+            user_manager: 用户管理器实例
+            parent: 父窗口
+        """
         super().__init__(parent)
         self.user_manager = user_manager
         self.init_ui()
@@ -81,6 +132,27 @@ class RegisterDialog(QDialog):
         layout.addLayout(button_layout)
 
     def register(self):
+        """
+        处理用户注册请求
+        
+        数据校验：
+        1. 必填字段验证
+           - 用户名不能为空
+           - 密码不能为空
+        2. 密码一致性验证
+           - 两次输入的密码必须相同
+        
+        处理流程：
+        1. 获取表单数据
+        2. 执行数据校验
+        3. 调用用户管理器注册新用户
+        4. 根据注册结果显示提示信息
+        
+        注意事项：
+        - 用户名唯一性由用户管理器负责检查
+        - 密码会进行哈希处理后存储
+        - 邮箱和手机号为可选字段
+        """
         username = self.username_input.text()
         password = self.password_input.text()
         confirm = self.confirm_input.text()
@@ -103,7 +175,34 @@ class RegisterDialog(QDialog):
             QMessageBox.warning(self, '错误', '用户名已存在！')
 
 class ChangePasswordDialog(QDialog):
+    """
+    修改密码对话框
+    
+    界面布局：
+    1. 密码输入区
+       - 原密码验证
+       - 新密码输入
+       - 确认新密码
+       
+    2. 操作按钮区
+       - 确认修改
+       - 取消操作
+       
+    安全措施：
+    - 原密码验证
+    - 新密码确认
+    - 密码强度检查
+    """
+    
     def __init__(self, user_manager: UserManager, username: str, parent=None):
+        """
+        初始化修改密码对话框
+        
+        Args:
+            user_manager: 用户管理器实例
+            username: 当前用户名
+            parent: 父窗口
+        """
         super().__init__(parent)
         self.user_manager = user_manager
         self.username = username
@@ -153,6 +252,26 @@ class ChangePasswordDialog(QDialog):
         layout.addLayout(button_layout)
 
     def change_password(self):
+        """
+        处理密码修改请求
+        
+        数据校验：
+        1. 必填字段验证
+           - 旧密码不能为空
+           - 新密码不能为空
+        2. 新密码确认验证
+           - 两次输入的新密码必须相同
+        
+        处理流程：
+        1. 获取密码输入
+        2. 执行输入验证
+        3. 调用用户管理器修改密码
+        4. 根据修改结果显示提示信息
+        
+        安全考虑：
+        - 验证旧密码以确保身份
+        - 密码修改后需要重新登录
+        """
         old_password = self.old_input.text()
         new_password = self.new_input.text()
         confirm = self.confirm_input.text()
@@ -172,7 +291,38 @@ class ChangePasswordDialog(QDialog):
             QMessageBox.warning(self, '错误', '旧密码错误！')
 
 class BookDialog(QDialog):
+    """
+    图书信息编辑对话框
+    
+    界面布局：
+    1. 基本信息区
+       - 书名
+       - 作者
+       - 分类（下拉选择）
+       
+    2. 库存信息区
+       - 数量设置
+       - 描述信息
+       
+    3. 操作按钮区
+       - 保存
+       - 取消
+       
+    使用场景：
+    - 添加新图书
+    - 编辑已有图书
+    - 调整库存信息
+    """
+    
     def __init__(self, book_manager: BookManager, book: Book = None, parent=None):
+        """
+        初始化图书对话框
+        
+        Args:
+            book_manager: 图书管理器实例
+            book: 要编辑的图书对象（如果是添加新图书则为None）
+            parent: 父窗口
+        """
         super().__init__(parent)
         self.book_manager = book_manager
         self.book = book
@@ -250,6 +400,32 @@ class BookDialog(QDialog):
         layout.addLayout(button_layout)
 
     def save_book(self):
+        """
+        保存图书信息
+        
+        适用场景：
+        1. 添加新图书
+        2. 修改现有图书
+        
+        数据校验：
+        1. 必填字段验证
+           - 书名不能为空
+           - 作者不能为空
+        2. 数量验证
+           - 必须为非负整数
+        
+        处理流程：
+        1. 收集表单数据
+        2. 验证数据完整性
+        3. 根据操作类型选择处理方式：
+           - 新增：生成图书ID并创建新记录
+           - 修改：更新现有记录
+        4. 保存并显示结果
+        
+        异常处理：
+        - 数据验证失败时显示提示
+        - 保存失败时显示错误信息
+        """
         title = self.title_input.text()
         author = self.author_input.text()
         category = self.category_input.currentText()
@@ -287,8 +463,39 @@ class BookDialog(QDialog):
                 QMessageBox.warning(self, '错误', '图书添加失败！')
 
 class BorrowBookDialog(QDialog):
+    """
+    借阅图书对话框
+    
+    界面布局：
+    1. 搜索区域
+       - 关键词搜索
+       - 实时过滤
+       
+    2. 图书列表
+       - 可用图书展示
+       - 库存状态显示
+       
+    3. 操作区域
+       - 借阅确认
+       - 取消操作
+       
+    功能特点：
+    - 实时库存检查
+    - 借阅资格验证
+    - 重复借阅防止
+    """
+    
     def __init__(self, book_manager: BookManager, borrow_manager: BorrowManager,
                  username: str, parent=None):
+        """
+        初始化借阅对话框
+        
+        Args:
+            book_manager: 图书管理器实例
+            borrow_manager: 借阅管理器实例
+            username: 当前用户名
+            parent: 父窗口
+        """
         super().__init__(parent)
         self.book_manager = book_manager
         self.borrow_manager = borrow_manager
@@ -362,6 +569,26 @@ class BorrowBookDialog(QDialog):
             self.book_table.setItem(row, 5, QTableWidgetItem(book.description or ''))
 
     def borrow_book(self):
+        """
+        处理图书借阅请求
+        
+        业务规则：
+        1. 图书必须有库存（数量>0）
+        2. 同一用户不能重复借同一本书
+        
+        处理流程：
+        1. 验证图书选择
+        2. 检查图书可借状态
+        3. 检查用户借阅资格
+        4. 执行借阅操作
+        5. 更新界面显示
+        
+        错误处理：
+        - 未选择图书
+        - 库存不足
+        - 重复借阅
+        - 借阅失败
+        """
         selected_items = self.book_table.selectedItems()
         if not selected_items:
             QMessageBox.warning(self, '警告', '请先选择要借阅的图书！')
@@ -395,6 +622,24 @@ class BorrowBookDialog(QDialog):
             QMessageBox.warning(self, '错误', '借阅失败！')
 
 class ReturnBookDialog(QDialog):
+    """
+    归还图书对话框
+    
+    界面布局：
+    1. 借阅列表
+       - 当前借阅图书
+       - 借阅状态显示
+       
+    2. 操作区域
+       - 归还确认
+       - 取消操作
+       
+    功能特点：
+    - 借阅状态检查
+    - 归还确认提示
+    - 库存自动更新
+    """
+    
     def __init__(self, book_manager: BookManager, borrow_manager: BorrowManager,
                  username: str, parent=None):
         super().__init__(parent)
@@ -447,6 +692,24 @@ class ReturnBookDialog(QDialog):
             self.borrow_table.setItem(row, 4, QTableWidgetItem('借阅中'))
 
     def return_book(self):
+        """
+        处理图书归还请求
+        
+        业务规则：
+        1. 只能归还已借阅的图书
+        2. 只能由借阅人本人归还
+        
+        处理流程：
+        1. 验证图书选择
+        2. 确认借阅记录
+        3. 执行归还操作
+        4. 更新界面显示
+        
+        状态更新：
+        - 更新借阅记录状态
+        - 增加图书库存数量
+        - 刷新界面显示
+        """
         selected_items = self.borrow_table.selectedItems()
         if not selected_items:
             QMessageBox.warning(self, '警告', '请先选择要归还的图书！')
@@ -468,7 +731,38 @@ class ReturnBookDialog(QDialog):
             QMessageBox.warning(self, '错误', '归还失败！')
 
 class UserDialog(QDialog):
+    """
+    用户信息编辑对话框
+    
+    界面布局：
+    1. 基本信息区
+       - 用户名（仅添加时可编辑）
+       - 密码（仅添加时显示）
+       - 角色选择
+       
+    2. 联系信息区
+       - 电子邮箱
+       - 手机号码
+       
+    3. 操作按钮区
+       - 保存更改
+       - 取消操作
+       
+    使用场景：
+    - 添加新用户
+    - 编辑用户信息
+    - 更新联系方式
+    """
+    
     def __init__(self, user_manager: UserManager, user: User = None, parent=None):
+        """
+        初始化用户编辑对话框
+        
+        Args:
+            user_manager: 用户管理器实例
+            user: 要编辑的用户对象（如果是添加新用户则为None）
+            parent: 父窗口
+        """
         super().__init__(parent)
         self.user_manager = user_manager
         self.user = user
@@ -552,6 +846,25 @@ class UserDialog(QDialog):
         layout.addLayout(button_layout)
 
     def save_user(self):
+        """
+        处理用户信息保存请求
+        
+        数据校验：
+        1. 必填字段验证
+           - 用户名不能为空
+        2. 密码一致性验证（仅添加用户时）
+           - 两次输入的密码必须相同
+        
+        处理流程：
+        1. 获取用户输入的信息
+        2. 验证输入完整性
+        3. 调用用户管理器保存用户信息
+        4. 根据操作结果显示提示信息
+        
+        注意事项：
+        - 编辑用户时用户名不可修改
+        - 密码会进行哈希处理后存储
+        """
         username = self.username_input.text()
         role = UserRole(self.role_input.currentText())
         email = self.email_input.text() or None
@@ -583,4 +896,4 @@ class UserDialog(QDialog):
                 QMessageBox.information(self, '成功', '用户添加成功！')
                 self.accept()
             else:
-                QMessageBox.warning(self, '错误', '用户名已存在！') 
+                QMessageBox.warning(self, '错误', '用户名已存在！')

@@ -1,7 +1,44 @@
+"""
+主窗口模块
+
+本模块提供图书管理系统的主要功能界面，实现完整的业务操作流程：
+
+功能模块：
+1. 图书管理
+   - 图书信息维护（增删改查）
+   - 库存管理
+   - 数据导出
+   
+2. 借阅管理
+   - 图书借阅
+   - 图书归还
+   - 借阅历史查询
+   
+3. 用户管理（管理员专属）
+   - 用户账户维护
+   - 权限管理
+   
+4. 个人账户
+   - 密码修改
+   - 登录状态管理
+
+界面特点：
+1. 选项卡式布局，功能分类清晰
+2. 表格化数据展示，操作直观
+3. 权限分级显示，安全可控
+4. 统一的操作风格和响应机制
+
+用户体验：
+1. 实时数据更新
+2. 友好的错误提示
+3. 操作确认机制
+4. 快捷功能入口
+"""
+
 from PyQt5.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
-                             QLabel, QLineEdit, QPushButton, QMessageBox,
-                             QTableWidget, QTableWidgetItem, QTabWidget,
-                             QComboBox, QHeaderView, QFileDialog, QDialog)
+                            QLabel, QLineEdit, QPushButton, QMessageBox,
+                            QTableWidget, QTableWidgetItem, QTabWidget,
+                            QComboBox, QHeaderView, QFileDialog, QDialog)
 from PyQt5.QtCore import Qt
 from core.user import User, UserManager, UserRole
 from core.book import Book, BookManager
@@ -9,7 +46,53 @@ from core.borrow import BorrowManager, BorrowRecord
 from gui.dialogs import ChangePasswordDialog, BookDialog, BorrowBookDialog, ReturnBookDialog, UserDialog
 
 class MainWindow(QMainWindow):
+    """
+    主窗口类
+    
+    核心职责：
+    1. 界面框架搭建
+       - 菜单栏和工具栏
+       - 状态栏
+       - 核心功能区
+       
+    2. 数据管理
+       - 用户信息维护
+       - 图书数据处理
+       - 借阅记录管理
+       
+    3. 业务流程控制
+       - 权限检查
+       - 操作验证
+       - 异常处理
+       
+    4. 界面交互
+       - 事件响应
+       - 状态更新
+       - 消息提示
+    """
+    
     def __init__(self, user: User):
+        """
+        初始化主窗口
+        
+        初始化流程：
+        1. 创建核心管理器
+           - 用户管理器
+           - 图书管理器
+           - 借阅管理器
+           
+        2. 初始化界面
+           - 设置窗口属性
+           - 创建功能选项卡
+           - 配置操作按钮
+           
+        3. 权限控制
+           - 根据用户角色显示功能
+           - 设置操作权限
+           
+        参数：
+            user: 当前登录用户对象
+        """
         super().__init__()
         self.user = user
         self.user_manager = UserManager()
@@ -58,6 +141,29 @@ class MainWindow(QMainWindow):
         layout.addLayout(bottom_layout)
 
     def init_book_tab(self, tab: QWidget):
+        """
+        初始化图书管理选项卡
+        
+        界面结构：
+        1. 搜索区域
+           - 关键词输入框
+           - 搜索按钮
+           
+        2. 图书信息表格
+           - ID、书名、作者等字段
+           - 自适应列宽
+           - 支持排序和选择
+           
+        3. 操作按钮区
+           - 基础操作（借阅、归还）
+           - 管理操作（增删改）- 仅管理员可见
+           - 数据导出功能
+           
+        交互特点：
+        - 实时搜索响应
+        - 多选多操作支持
+        - 权限控制显示
+        """
         layout = QVBoxLayout(tab)
 
         # 搜索区域
@@ -107,6 +213,24 @@ class MainWindow(QMainWindow):
         self.refresh_book_table()
 
     def init_borrow_tab(self, tab: QWidget):
+        """
+        初始化借阅管理选项卡
+        
+        界面结构：
+        1. 借阅记录表格
+           - 借阅ID、图书信息
+           - 借阅时间、状态
+           - 自适应列宽
+           
+        2. 操作按钮区
+           - 借阅和归还按钮
+           - 查看全部记录（管理员）
+           
+        数据显示：
+        - 普通用户仅看到自己的记录
+        - 管理员可查看所有记录
+        - 支持状态筛选
+        """
         layout = QVBoxLayout(tab)
 
         # 借阅历史表格
@@ -137,6 +261,25 @@ class MainWindow(QMainWindow):
         self.refresh_borrow_table()
 
     def init_user_tab(self, tab: QWidget):
+        """
+        初始化用户管理选项卡（管理员专属）
+        
+        界面结构：
+        1. 用户信息表格
+           - 基本信息字段
+           - 角色和状态
+           - 操作列
+           
+        2. 管理按钮区
+           - 添加用户
+           - 编辑用户
+           - 删除用户
+           
+        功能特点：
+        - 快速编辑支持
+        - 批量操作处理
+        - 用户状态管理
+        """
         layout = QVBoxLayout(tab)
 
         # 用户表格
@@ -162,6 +305,20 @@ class MainWindow(QMainWindow):
         self.refresh_user_table()
 
     def refresh_book_table(self):
+        """
+        刷新图书信息表格
+        
+        功能：
+        1. 清空当前表格内容
+        2. 获取最新的图书数据
+        3. 按顺序填充表格字段：
+           - ID：图书唯一标识
+           - 书名：图书标题
+           - 作者：图书作者
+           - 分类：图书类别
+           - 数量：在库数量
+           - 描述：图书简介
+        """
         self.book_table.setRowCount(0)
         books = self.book_manager.get_all_books()
         for row, book in enumerate(books):
@@ -174,6 +331,21 @@ class MainWindow(QMainWindow):
             self.book_table.setItem(row, 5, QTableWidgetItem(book.description or ''))
 
     def refresh_borrow_table(self):
+        """
+        刷新借阅记录表格
+        
+        功能：
+        1. 清空当前表格内容
+        2. 根据用户角色获取借阅记录：
+           - 管理员：显示所有用户的借阅记录
+           - 普通用户：只显示自己的借阅记录
+        3. 填充表格字段：
+           - 借阅ID：记录唯一标识
+           - 图书ID：关联的图书
+           - 借阅时间：借出时间
+           - 归还时间：实际归还时间（未归还显示"未归还"）
+           - 状态：已归还/借阅中
+        """
         self.borrow_table.setRowCount(0)
         # 管理员可以查看所有借阅记录，普通用户只能查看自己的
         if self.user.role == UserRole.ADMIN:
@@ -191,6 +363,20 @@ class MainWindow(QMainWindow):
             self.borrow_table.setItem(row, 4, QTableWidgetItem(status))
 
     def refresh_user_table(self):
+        """
+        刷新用户信息表格（仅管理员可见）
+        
+        功能：
+        1. 清空当前表格内容
+        2. 获取所有用户信息
+        3. 填充表格字段：
+           - 用户名：账号名称
+           - 角色：用户权限级别
+           - 邮箱：联系邮箱
+           - 手机：联系电话
+           - 操作：快捷编辑按钮
+        4. 为每行添加编辑按钮，实现快速操作
+        """
         self.user_table.setRowCount(0)
         users = self.user_manager.users
         for row, user in enumerate(users):
@@ -206,11 +392,30 @@ class MainWindow(QMainWindow):
             self.user_table.setCellWidget(row, 4, edit_button)
 
     def search_books(self):
+        """
+        搜索图书功能
+        
+        搜索范围：
+        - 书名
+        - 作者
+        - 分类
+        
+        处理流程：
+        1. 获取搜索关键词
+        2. 空关键词时显示全部图书
+        3. 调用图书管理器执行搜索
+        4. 清空并更新表格显示搜索结果
+        
+        注意：
+        - 搜索支持模糊匹配
+        - 不区分大小写
+        """
         keyword = self.search_input.text()
         if not keyword:
             self.refresh_book_table()
             return
 
+        # 执行搜索并显示结果
         books = self.book_manager.search_books(keyword)
         self.book_table.setRowCount(0)
         for row, book in enumerate(books):
@@ -223,11 +428,26 @@ class MainWindow(QMainWindow):
             self.book_table.setItem(row, 5, QTableWidgetItem(book.description or ''))
 
     def add_book(self):
+        """
+        添加新图书
+        
+        流程：
+        1. 打开图书信息编辑对话框
+        2. 如果成功添加图书，刷新图书表格
+        """
         dialog = BookDialog(self.book_manager, parent=self)
         if dialog.exec_() == QDialog.Accepted:
             self.refresh_book_table()
 
     def edit_book(self):
+        """
+        编辑图书信息
+        
+        流程：
+        1. 获取选中的图书
+        2. 打开图书编辑对话框
+        3. 如果修改成功，刷新图书表格
+        """
         selected_items = self.book_table.selectedItems()
         if not selected_items:
             QMessageBox.warning(self, '警告', '请先选择要编辑的图书！')
@@ -242,6 +462,14 @@ class MainWindow(QMainWindow):
                 self.refresh_book_table()
 
     def delete_book(self):
+        """
+        删除图书
+        
+        流程：
+        1. 确认选择了要删除的图书
+        2. 显示删除确认对话框
+        3. 如果用户确认，执行删除操作并刷新图书表格
+        """
         selected_items = self.book_table.selectedItems()
         if not selected_items:
             QMessageBox.warning(self, '警告', '请先选择要删除的图书！')
@@ -265,6 +493,27 @@ class MainWindow(QMainWindow):
                 QMessageBox.warning(self, '错误', '图书删除失败！')
 
     def export_books(self):
+        """
+        导出图书信息功能
+        
+        功能：
+        1. 打开文件保存对话框
+        2. 指定保存为CSV格式
+        3. 调用图书管理器执行导出
+        4. 显示导出结果提示
+        
+        导出字段：
+        - 图书ID
+        - 书名
+        - 作者
+        - 分类
+        - 数量
+        - 描述
+        
+        异常处理：
+        - 导出失败时显示错误信息
+        - 用户取消操作时直接返回
+        """
         filename, _ = QFileDialog.getSaveFileName(
             self,
             '导出图书信息',
@@ -280,6 +529,13 @@ class MainWindow(QMainWindow):
                 QMessageBox.warning(self, '错误', f'图书信息导出失败：{str(e)}')
 
     def borrow_book(self):
+        """
+        处理图书借阅操作
+        
+        流程：
+        1. 打开借阅对话框
+        2. 如果用户确认借阅，更新借阅表和图书表
+        """
         dialog = BorrowBookDialog(self.book_manager, self.borrow_manager,
                                 self.user.username, parent=self)
         if dialog.exec_() == QDialog.Accepted:
@@ -287,6 +543,13 @@ class MainWindow(QMainWindow):
             self.refresh_book_table()
         
     def return_book(self):
+        """
+        处理图书归还操作
+        
+        流程：
+        1. 打开归还对话框
+        2. 如果用户确认归还，更新借阅表和图书表
+        """
         dialog = ReturnBookDialog(self.book_manager, self.borrow_manager,
                                 self.user.username, parent=self)
         if dialog.exec_() == QDialog.Accepted:
@@ -294,11 +557,29 @@ class MainWindow(QMainWindow):
             self.refresh_book_table()
 
     def add_user(self):
+        """
+        添加新用户
+        
+        流程：
+        1. 打开用户信息编辑对话框
+        2. 如果成功添加用户，刷新用户表格
+        """
         dialog = UserDialog(self.user_manager, parent=self)
         if dialog.exec_() == QDialog.Accepted:
             self.refresh_user_table()
 
     def edit_user(self, user=None):
+        """
+        编辑用户信息
+        
+        Args:
+            user: 要编辑的用户对象，如果为None则从表格选择
+            
+        流程：
+        1. 获取要编辑的用户信息
+        2. 打开用户编辑对话框
+        3. 如果修改成功，刷新用户表格
+        """
         if not user:
             selected_items = self.user_table.selectedItems()
             if not selected_items:
@@ -315,6 +596,16 @@ class MainWindow(QMainWindow):
                 self.refresh_user_table()
 
     def delete_user(self):
+        """
+        删除用户
+        
+        流程：
+        1. 确认选择了要删除的用户
+        2. 检查是否为当前登录用户
+        3. 检查用户是否有未归还的图书
+        4. 确认删除操作
+        5. 执行删除并刷新用户表格
+        """
         selected_items = self.user_table.selectedItems()
         if not selected_items:
             QMessageBox.warning(self, '警告', '请先选择要删除的用户！')
@@ -354,17 +645,32 @@ class MainWindow(QMainWindow):
             self.refresh_user_table()
 
     def show_change_password_dialog(self):
+        """
+        显示修改密码对话框
+        """
         dialog = ChangePasswordDialog(self.user_manager, self.user.username, self)
         dialog.exec_()
 
     def logout(self):
+        """
+        退出登录
+        
+        流程：
+        1. 显示新的登录窗口
+        2. 关闭当前主窗口
+        """
         from gui.login_window import LoginWindow
         self.login_window = LoginWindow()
         self.login_window.show()
         self.close()
 
     def view_all_borrows(self):
-        """管理员查看所有借阅记录"""
+        """
+        管理员查看所有借阅记录
+        
+        - 清空并重新填充借阅记录表格
+        - 显示所有用户的借阅历史
+        """
         self.borrow_table.setRowCount(0)
         for record in self.borrow_manager.records:
             row = self.borrow_table.rowCount()
@@ -374,4 +680,4 @@ class MainWindow(QMainWindow):
             self.borrow_table.setItem(row, 2, QTableWidgetItem(record.borrow_date))
             self.borrow_table.setItem(row, 3, QTableWidgetItem(record.return_date or '未归还'))
             status = '已归还' if record.return_date else '借阅中'
-            self.borrow_table.setItem(row, 4, QTableWidgetItem(status)) 
+            self.borrow_table.setItem(row, 4, QTableWidgetItem(status))
