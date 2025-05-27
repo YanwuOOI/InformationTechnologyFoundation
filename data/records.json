@@ -12,5 +12,19 @@
     "username": "user",
     "borrow_date": "2025-05-25 12:02:45",
     "return_date": "2025-05-25 12:02:55"
+  },
+  {
+    "id": "BR000003",
+    "book_id": "BK000001",
+    "username": "user",
+    "borrow_date": "2025-05-27 19:24:49",
+    "return_date": "2025-05-27 19:24:54"
+  },
+  {
+    "id": "BR000004",
+    "book_id": "BK000001",
+    "username": "admin",
+    "borrow_date": "2025-05-27 19:47:20",
+    "return_date": "2025-05-27 19:47:58"
   }
 ]

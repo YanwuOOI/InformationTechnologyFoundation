@@ -5,6 +5,14 @@
     "author": "Ma",
     "category": "教育",
     "quantity": 10,
-    "description": ""
+    "description": "一本数学书"
+  },
+  {
+    "id": "BK000002",
+    "title": "English",
+    "author": "Li",
+    "category": "教育",
+    "quantity": 5,
+    "description": "一本英文书"
   }
 ]

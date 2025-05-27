@@ -12,5 +12,12 @@
     "role": "user",
     "email": "2@qq.com",
     "phone": "17728071742"
+  },
+  {
+    "username": "user1",
+    "password_hash": "0a041b9462caa4a31bac3567e0b6e6fd9100787db2ab433d96f6d178cabfce90",
+    "role": "user",
+    "email": "821908924@qq.com",
+    "phone": "12233445566"
   }
 ]
