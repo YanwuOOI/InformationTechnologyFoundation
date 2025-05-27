@@ -44,6 +44,7 @@ from core.user import User, UserManager, UserRole
 from core.book import Book, BookManager
 from core.borrow import BorrowManager, BorrowRecord
 from gui.dialogs import ChangePasswordDialog, BookDialog, BorrowBookDialog, ReturnBookDialog, UserDialog
+from PyQt5.QtGui import QIcon
 
 class MainWindow(QMainWindow):
     """
@@ -99,6 +100,7 @@ class MainWindow(QMainWindow):
         self.book_manager = BookManager()
         self.borrow_manager = BorrowManager(book_manager=self.book_manager)
         self.init_ui()
+        self.setWindowIcon(QIcon("resources/book.png"))
 
     def init_ui(self):
         self.setWindowTitle(f'图书管理系统 - {self.user.username}')

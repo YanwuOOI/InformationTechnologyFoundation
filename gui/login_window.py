@@ -24,6 +24,7 @@ from PyQt5.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
 from PyQt5.QtCore import Qt
 from core.user import UserManager, UserRole
 from gui.main_window import MainWindow
+from PyQt5.QtGui import QIcon
 
 class LoginWindow(QMainWindow):
     """
@@ -45,6 +46,8 @@ class LoginWindow(QMainWindow):
         - 界面组件和布局
         """
         super().__init__()
+        # 设置窗口图标
+        self.setWindowIcon(QIcon("resources/book.png"))  
         self.user_manager = UserManager()  # 创建用户管理器实例
         self.init_ui()
 
