@@ -874,13 +874,13 @@ class UserDialog(QDialog):
             QMessageBox.warning(self, '警告', '用户名不能为空！')
             return
 
-        if self.user:  # 编辑用户
+        if self.user:
             if self.user_manager.update_user_info(username, email, phone):
                 QMessageBox.information(self, '成功', '用户信息更新成功！')
                 self.accept()
             else:
                 QMessageBox.warning(self, '错误', '用户信息更新失败！')
-        else:  # 添加用户
+        else:
             password = self.password_input.text()
             confirm = self.confirm_input.text()
 
